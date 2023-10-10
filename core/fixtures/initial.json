@@ -1,0 +1,54 @@
+[
+  {
+    "model": "core.tier",
+    "pk": 1,
+    "fields": {
+      "name": "Basic",
+      "links_to_original_images_allowed": false,
+      "expiring_links_allowed": false,
+      "thumbnail_sizes": [
+        1
+      ]
+    }
+  },
+  {
+    "model": "core.tier",
+    "pk": 2,
+    "fields": {
+      "name": "Premium",
+      "links_to_original_images_allowed": true,
+      "expiring_links_allowed": false,
+      "thumbnail_sizes": [
+        1,
+        2
+      ]
+    }
+  },
+  {
+    "model": "core.tier",
+    "pk": 3,
+    "fields": {
+      "name": "Enterprise",
+      "links_to_original_images_allowed": true,
+      "expiring_links_allowed": true,
+      "thumbnail_sizes": [
+        1,
+        2
+      ]
+    }
+  },
+  {
+    "model": "core.imagesize",
+    "pk": 1,
+    "fields": {
+      "height": 200
+    }
+  },
+  {
+    "model": "core.imagesize",
+    "pk": 2,
+    "fields": {
+      "height": 400
+    }
+  }
+]
