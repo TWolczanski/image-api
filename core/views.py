@@ -26,21 +26,21 @@ class ImageViewSet(
         user = self.request.user
         image = serializer.save(owner=user)
         for size in user.tier.thumbnail_sizes.all():
-            models.ImageLink.objects.create(image=image, size=size)
+            models.ImagePreview.objects.create(image=image, size=size)
         if user.tier.links_to_original_images_allowed:
-            models.ImageLink.objects.create(image=image)
+            models.ImagePreview.objects.create(image=image)
 
 
-class ImageLinkViewSet(
+class ImagePreviewViewSet(
     mixins.CreateModelMixin,
     viewsets.GenericViewSet
 ):
-    serializer_class = serializers.ImageLinkSerializer
+    serializer_class = serializers.ImagePreviewSerializer
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return models.ImageLink.objects.filter(image__owner=self.request.user)
+        return models.ImagePreview.objects.filter(image__owner=self.request.user)
 
     def perform_create(self, serializer):
         user = self.request.user

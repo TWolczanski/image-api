@@ -47,14 +47,14 @@ class CoreTestCase(APITestCase):
         response = self.client.post("/images/", {"file": self.create_image(800, 600, "PNG")}, format="multipart")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(models.Image.objects.count(), 1)
-        self.assertEqual(models.ImageLink.objects.count(), 1)
-        link = models.ImageLink.objects.get()
-        self.assertEqual(link.size.height, 200)
+        self.assertEqual(models.ImagePreview.objects.count(), 1)
+        preview = models.ImagePreview.objects.get()
+        self.assertEqual(preview.size.height, 200)
 
         response = self.client.get("/images/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        response = self.client.get(f"/images/links/{link.pk}/")
+        response = self.client.get(f"/images/previews/{preview.pk}/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         buffer = BytesIO(b"".join(response.streaming_content))
         image = Image.open(buffer)
@@ -62,7 +62,7 @@ class CoreTestCase(APITestCase):
         self.assertEqual(image.height, 200)
 
         data = {"image": models.Image.objects.get().pk, "duration": timedelta(seconds=300)}
-        response = self.client.post(f"/images/links/", data)
+        response = self.client.post(f"/images/previews/", data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_premium_user(self):
@@ -71,23 +71,23 @@ class CoreTestCase(APITestCase):
         response = self.client.post("/images/", {"file": self.create_image(800, 600, "PNG")}, format="multipart")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(models.Image.objects.count(), 1)
-        self.assertEqual(models.ImageLink.objects.count(), 3)
-        links = models.ImageLink.objects.all()
-        self.assertEqual({link.size.height if link.size else None for link in links}, {200, 400, None})
+        self.assertEqual(models.ImagePreview.objects.count(), 3)
+        previews = models.ImagePreview.objects.all()
+        self.assertEqual({preview.size.height if preview.size else None for preview in previews}, {200, 400, None})
 
         response = self.client.get("/images/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        for link in links:
-            response = self.client.get(f"/images/links/{link.pk}/")
+        for preview in previews:
+            response = self.client.get(f"/images/previews/{preview.pk}/")
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             buffer = BytesIO(b"".join(response.streaming_content))
             image = Image.open(buffer)
             self.assertEqual(image.format, "PNG")
-            self.assertEqual(image.height, link.size.height if link.size else 600)
+            self.assertEqual(image.height, preview.size.height if preview.size else 600)
 
         data = {"image": models.Image.objects.get().pk, "duration": timedelta(seconds=300)}
-        response = self.client.post(f"/images/links/", data)
+        response = self.client.post(f"/images/previews/", data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         
     def test_enterprise_user(self):
@@ -96,26 +96,26 @@ class CoreTestCase(APITestCase):
         response = self.client.post("/images/", {"file": self.create_image(800, 600, "PNG")}, format="multipart")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(models.Image.objects.count(), 1)
-        self.assertEqual(models.ImageLink.objects.count(), 3)
-        links = models.ImageLink.objects.all()
-        self.assertEqual({link.size.height if link.size else None for link in links}, {200, 400, None})
+        self.assertEqual(models.ImagePreview.objects.count(), 3)
+        previews = models.ImagePreview.objects.all()
+        self.assertEqual({preview.size.height if preview.size else None for preview in previews}, {200, 400, None})
 
         response = self.client.get("/images/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        for link in links:
-            response = self.client.get(f"/images/links/{link.pk}/")
+        for preview in previews:
+            response = self.client.get(f"/images/previews/{preview.pk}/")
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             buffer = BytesIO(b"".join(response.streaming_content))
             image = Image.open(buffer)
             self.assertEqual(image.format, "PNG")
-            self.assertEqual(image.height, link.size.height if link.size else 600)
+            self.assertEqual(image.height, preview.size.height if preview.size else 600)
 
         data = {"image": models.Image.objects.get().pk, "duration": timedelta(seconds=300)}
-        response = self.client.post(f"/images/links/", data)
+        response = self.client.post(f"/images/previews/", data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(models.ImageLink.objects.count(), 4)
-        self.assertEqual(models.ImageLink.objects.filter(size=None).count(), 2)
+        self.assertEqual(models.ImagePreview.objects.count(), 4)
+        self.assertEqual(models.ImagePreview.objects.filter(size=None).count(), 2)
     
     def test_image_format(self):
         self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token_basic.key)
@@ -135,17 +135,17 @@ class CoreTestCase(APITestCase):
         response = self.client.post("/images/", {"file": self.create_image(800, 600, "PNG")}, format="multipart")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(models.Image.objects.count(), 1)
-        self.assertEqual(models.ImageLink.objects.count(), 1)
+        self.assertEqual(models.ImagePreview.objects.count(), 1)
         image = models.Image.objects.get()
-        link = models.ImageLink.objects.get()
+        preview = models.ImagePreview.objects.get()
 
         self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token_enterprise.key)
 
-        response = self.client.get(f"/images/links/{link.pk}/")
+        response = self.client.get(f"/images/previews/{preview.pk}/")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
         data = {"image": image.pk, "duration": timedelta(seconds=300)}
-        response = self.client.post(f"/images/links/", data)
+        response = self.client.post(f"/images/previews/", data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
     
     def test_auth_required(self):

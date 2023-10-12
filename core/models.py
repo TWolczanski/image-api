@@ -34,17 +34,17 @@ class Image(models.Model):
         return str(self.file)
 
 
-class ImageLinkManager(models.Manager):
+class ImagePreviewManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(
             Q(duration__isnull=True) |
             Q(duration__gte=datetime.now() - F("created_at"))
         )
 
-class ImageLink(models.Model):
-    objects = ImageLinkManager()
+class ImagePreview(models.Model):
+    objects = ImagePreviewManager()
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    image = models.ForeignKey(Image, on_delete=models.CASCADE, related_name="links")
+    image = models.ForeignKey(Image, on_delete=models.CASCADE, related_name="previews")
     size = models.ForeignKey(ImageSize, on_delete=models.CASCADE, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     duration = models.DurationField(blank=True, null=True)

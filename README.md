@@ -28,6 +28,6 @@ POST `/images/` - upload an image
 
 GET `/images/` - list user's images
 
-POST `/images/links/` - create an expiring link to an image
+POST `/images/previews/` - create an expiring link to an image
 
-GET `/images/links/{link_id}` - retrieve an image or its thumbnail
+GET `/images/previews/{id}` - retrieve an image or its thumbnail

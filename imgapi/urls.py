@@ -5,7 +5,7 @@ from core import views
 
 router = routers.DefaultRouter()
 router.register(r"images", views.ImageViewSet, basename="image")
-router.register(r"images/links", views.ImageLinkViewSet, basename="imagelink")
+router.register(r"images/previews", views.ImagePreviewViewSet, basename="imagepreview")
 
 urlpatterns = [
     path('admin/', admin.site.urls),
