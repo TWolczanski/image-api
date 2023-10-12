@@ -29,5 +29,3 @@ http --form POST http://127.0.0.1:8000/images/ "Authorization: Token af1da239511
 http --form POST http://127.0.0.1:8000/images/ "Authorization: Token af1da2395116fa5fd40506e5b8de6a08f2316aa6" file@manage.png
 
 http --form POST http://127.0.0.1:8000/images/ "Authorization: Token af1da2395116fa5fd40506e5b8de6a08f2316aa6" file@test-img-3.svg
-
-http --form POST http://127.0.0.1:8000/images/ "Authorization: Token af1da2395116fa5fd40506e5b8de6a08f2316aa6" file@homer_lurking.gif
